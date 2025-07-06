@@ -1,0 +1,18 @@
+@startuml
+class Customer {
+- name: String
+- email: String
++ place Order(): void
+}
+class Order {
+- orderid: int
+- date: Date
++ calculateTotal(): double
+}
+class Premium Customer {
++ get Rewards(): void
+
+Customer "1" -- "0..*" Order :
+places
+Customer <|-- PremiumCustomer
+@enduml
