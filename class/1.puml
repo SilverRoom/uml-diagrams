@@ -1,18 +1,19 @@
 @startuml
 class Customer {
-- name: String
-- email: String
-+ place Order(): void
+ - name: String
+ - email: String
+ + placeOrder(): void
 }
 class Order {
-- orderid: int
-- date: Date
-+ calculateTotal(): double
+ - orderid: int
+ - date: Date
+ + calculateTotal(): double
 }
-class Premium Customer {
-+ get Rewards(): void
+class PremiumCustomer {
+ + getRewards(): void
+}
 
-Customer "1" -- "0..*" Order :
-places
+Customer "1" -- "0..*" Order 
+:places
 Customer <|-- PremiumCustomer
 @enduml
