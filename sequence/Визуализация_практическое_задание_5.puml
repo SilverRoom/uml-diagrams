@@ -1,0 +1,23 @@
+@startuml  
+actor Customer as CU
+participant "Web UI" as WU
+participant "Order Controller" as OC
+participant "Payment Service" as PS
+database Database as DB
+  
+CU -> WU : запрос на оформление заказа 
+activate WU  
+  
+WU -> OC : передача данных заказа  
+deactivate WU  
+activate OC  
+OC -> DB : сохранение заказа 
+DB --> OC : заказ сохранен 
+OC -> PS : проведение платежа 
+PS --> OC : результат платежа
+OC --> WU : подтверждение платежа
+deactivate OC 
+activate WU
+WU --> CU : информирование покпателя    
+
+@enduml 
