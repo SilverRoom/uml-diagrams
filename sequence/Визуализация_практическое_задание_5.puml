@@ -1,23 +1,91 @@
 @startuml  
+skinparam actor {
+BackgroundColor #95C8D8
+BorderColor Black 
+}
+skinparam participant {
+BackgroundColor #FFF
+BorderColor Green
+}
+skinparam database {
+BackgroundColor #FFD700
+BorderColor Black
+}
+skinparam sequenceMessageAlign left
+
 actor Customer as CU
 participant "Web UI" as WU
 participant "Order Controller" as OC
 participant "Payment Service" as PS
 database Database as DB
-  
-CU -> WU : запрос на оформление заказа 
-activate WU  
-  
-WU -> OC : передача данных заказа  
-deactivate WU  
-activate OC  
-OC -> DB : сохранение заказа 
-DB --> OC : заказ сохранен 
-OC -> PS : проведение платежа 
-PS --> OC : результат платежа
-OC --> WU : подтверждение платежа
-deactivate OC 
-activate WU
-WU --> CU : информирование покпателя    
+participant "Notification Service" as NS
 
+
+group 1. Оформление заказа  
+    CU -> WU : createOrder(orderDetails)
+    activate WU  
+    WU -> OC : processOrder(orderDetails)  
+    deactivate WU  
+
+    activate OC  
+    OC -> DB : saveOrder(orderDetails)
+    activate DB 
+    DB -[#green]-> OC : orderSaved(orderId) 
+    note right
+    Заказ сохранен в статусе "Ожидание оплаты"
+    end note
+    deactivate DB
+
+end
+group 2. Оплата 
+    OC -> PS : processPayment(paymentInfo)
+    activate PS 
+    alt Успешная оплата
+        PS -[#green]-> OC : paymentResult(paymentStatus,orderId)
+        OC [#lightblue]->> NS : sendOrderNotification(orderId)
+        activate NS
+    else Ошибка оплаты
+        PS -[#red]-> OC : paymentResult(paymentStatus,errorMessage)
+        note right
+        Заказ сохранен в статусе "Предварительный"
+        end note
+        deactivate PS
+    end
+end
+group 3. Подтверждение 
+    OC --> WU : orderConfirmation(confirmationDetails)
+    deactivate OC 
+
+    activate WU
+    WU --> CU : displayOrderConfirmation(confirmationDetails)  
+    deactivate WU 
+end
+
+group 4. Изменение корзины 
+    CU -> WU : modifyCart(action, itemDetails)
+    activate WU  
+    WU -> OC : updateCart (action, itemDetails)
+    note right
+    Варианты действий: добавление,удаление, изменение количества
+    end note
+    deactivate WU  
+
+    activate OC  
+    OC -> DB : updateCartDB(cartData)
+    activate DB 
+    DB -[#green]-> OC : cartUpdateConfirmation
+    deactivate DB
+    OC --> WU : notifyCartUpdate(cartStatus)
+
+    deactivate OC
+end
+
+
+group 5. Уведомление менеджера 
+    NS [#lightblue]->> WU : modifyCart(orderId, status)
+    note left
+    Менеджер получает уведомление о новом заказе
+    end note
+
+end
 @enduml 
