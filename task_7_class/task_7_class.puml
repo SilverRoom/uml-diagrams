@@ -1,0 +1,57 @@
+@startuml
+abstract class User {
+    + id: int
+    + name: string
+    + email: string
+    + password: string
+}
+
+class Student <<extends>> User {
+    + studentId: string
+    + group: string
+}
+
+class Instructor <<extends>> User {
+    + academicTitle: string
+    + department: string
+}
+
+class Course {
+    + courseId: int
+    + title: string
+    + description: string
+    + duration: int
+    + price: double
+}
+
+class Module {
+    + moduleId: int
+    + title: string
+    + description: string
+}
+
+class Material {
+    + materialId: int
+    + title: string
+    + content: string
+    + type: string
+}
+
+class Enrollment {
+    + enrollmentId: int
+    + date: date
+    + grade: string
+}
+
+class PaymentProcessor {
+    + processPayment(): boolean
+}
+
+User <|-- Student : наследование (студент - подтип пользователя)
+User <|-- Instructor : наследование (преподаватель - подтип пользователя)
+Course *-- Module : композиция (курс состоит из модулей)
+Module *-- Material : композиция (модуль содержит материалы)
+Student -- Enrollment : ассоциация (студент зачисляется на курс, 1..*)
+Course -- Enrollment : ассоциация (курс имеет записи зачисления, 1..*)
+Enrollment o-- PaymentProcessor : зависимость (использует процессор для оплаты)
+@enduml
