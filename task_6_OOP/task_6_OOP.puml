@@ -1,0 +1,45 @@
+@startuml
+
+class PaymentManager {
+    - paymentType: List
+    + registerAllPaymentByType()
+    + processAllPayments()
+}
+
+abstract class Payment {
+    - transactionId: String
+    - amount: double
+    - paymentDate: Date
+    
+    + processPayment()
+    + getPaymentById()
+    + setPaymentAmount()
+  
+   
+}
+
+class CashPayment{
+    - cashProvided: double
+    
+    + cashPayment()
+    + calculateChange()
+
+}
+
+class CardPayment{
+    - cardNumber: String
+    - cardHolderName: String
+    - expiryDate: String
+    
+    + cardPayment()
+    + validateCard()
+
+}
+
+
+Payment <|-- CashPayment
+Payment <|-- CardPayment
+CashPayment ..|> PaymentManager 
+CardPayment ..|> PaymentManager 
+
+@enduml
