@@ -1,57 +1,71 @@
 @startuml
-abstract class User {
-    + id: int
-    + name: string
-    + email: string
-    + password: string
+abstract class User{
+    - id: int
+    - name: string
+    - email: string
+    - password: string
+    - libraryProfile: LibraryProfile
+    # getUser(): void
 }
 
-class Student <<extends>> User {
-    + studentId: string
-    + group: string
+class Student extends User {
+    - studentId: string
+    - group: string
 }
 
-class Instructor <<extends>> User {
-    + academicTitle: string
-    + department: string
+class LibraryProfile{
+    - profileId: string
+    - avatar: string
+    - socialLink: string
+}
+
+class Instructor extends User {
+    - academicId: string
+    - academicTitle: string
+    - department: string
+
 }
 
 class Course {
-    + courseId: int
-    + title: string
-    + description: string
-    + duration: int
-    + price: double
+    - courseId: int
+    - title: string
+    - description: string
+    - duration: int
+    - price: double
+    - module:Module
+    - material:Material
+    + getAllCourseInfo():void
 }
 
 class Module {
-    + moduleId: int
-    + title: string
-    + description: string
+    - moduleId: int
+    - title: string
+    - description: string
 }
 
 class Material {
-    + materialId: int
-    + title: string
-    + content: string
-    + type: string
+    - materialId: int
+    - title: string
+    - content: string
+    - type: string
 }
 
 class Enrollment {
-    + enrollmentId: int
-    + date: date
-    + grade: string
+    - enrollmentId: int
+    - date: date
+    - grade: string
+    # setGrade(): void
 }
 
 class PaymentProcessor {
     + processPayment(): boolean
 }
-
+LibraryProfile "0.." ----> "1"  User :ассоциация (студент может иметь профиль на платформе библиотеки, 0..*)
 User <|-- Student : наследование (студент - подтип пользователя)
 User <|-- Instructor : наследование (преподаватель - подтип пользователя)
-Course *-- Module : композиция (курс состоит из модулей)
-Module *-- Material : композиция (модуль содержит материалы)
+Course o-- Module : композиция (курс состоит из модулей)
+Module o-- Material : композиция (модуль содержит материалы)
 Student -- Enrollment : ассоциация (студент зачисляется на курс, 1..*)
 Course -- Enrollment : ассоциация (курс имеет записи зачисления, 1..*)
-Enrollment o-- PaymentProcessor : зависимость (использует процессор для оплаты)
+Enrollment ..> PaymentProcessor : зависимость (использует процессор для оплаты)
 @enduml
