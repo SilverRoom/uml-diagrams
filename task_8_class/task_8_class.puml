@@ -1,0 +1,21 @@
+@startuml
+actor Клиент as Client
+actor КредитныйМенеджер as CreditManager
+actor СлужбаБезопасности as SecurityService
+actor БюроКредитныхИсторий as CRA
+
+Client --> CreditManager : подает кредитную заявку
+
+CreditManager --> SecurityService : проверка данных клиента
+CreditManager --> CRA : запрос данных из БКИ
+
+CRA --> CreditManager : предоставляет кредитный отчет
+
+CreditManager --> {
+    [Анализ финансовых показателей]
+    [Оценка рисков]
+}
+
+CreditManager --> Decision : принятие решения по заявке
+
+@enduml
